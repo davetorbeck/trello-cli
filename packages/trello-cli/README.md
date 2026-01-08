@@ -44,5 +44,15 @@ You will then have the `trello` command available anywhere.
 # Examples
 
 ```bash
+# Create a card
 $ trello card:create --board "Inbox" --list "Inbox" --name "Quick card added from command line"
+
+# Show card details with comments and attachments
+$ trello card:show --board "Inbox" --list "Inbox" --card "Card Name" --format json
+
+# Download card image attachments locally
+$ trello card:download-attachments --board "Inbox" --list "Inbox" --card "Card Name" --output ./downloads
+
+# Or use a card URL
+$ trello card:download-attachments --url "https://trello.com/c/abc123/1-card-name" --output ./downloads
 ```
