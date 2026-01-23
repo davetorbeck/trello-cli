@@ -59,7 +59,7 @@
     "dev": "tsc -b --watch",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "prepack": "bun run build && oclif manifest && oclif readme",
-    "test": "jest",
+    "test": "bun test",
     "version": "oclif readme && git add README.md"
   },
   "engines": {

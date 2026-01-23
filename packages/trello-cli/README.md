@@ -47,8 +47,20 @@ You will then have the `trello` command available anywhere.
 # Create a card
 $ trello card:create --board "Inbox" --list "Inbox" --name "Quick card added from command line"
 
+# Update a card's description
+$ trello card:update --board "Inbox" --list "Inbox" --card "Card Name" --description "New description"
+
+# Update a card's name and due date
+$ trello card:update --board "Inbox" --list "Inbox" --card "Card Name" --name "New Name" --due "next friday"
+
+# Pipe description from stdin
+$ echo "Description from stdin" | trello card:update --board "Inbox" --list "Inbox" --card "Card Name" -d -
+
 # Show card details with comments and attachments
 $ trello card:show --board "Inbox" --list "Inbox" --card "Card Name" --format json
+
+# List all labels on a board
+$ trello label:list --board "Inbox"
 
 # Download card image attachments locally
 $ trello card:download-attachments --board "Inbox" --list "Inbox" --card "Card Name" --output ./downloads
