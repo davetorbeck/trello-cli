@@ -19,7 +19,7 @@
   "author": "Michael Heap <m@michaelheap.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^18.0.0",
     "typescript": "^5.7.3"
   }
 }

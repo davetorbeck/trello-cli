@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/json2csv": "^5.0.7",
-    "@types/node": "^20.0.0",
+    "@types/node": "^18.0.0",
     "oclif": "^3.17.2",
     "shx": "^0.3.4",
     "ts-node": "^10.9.2",
