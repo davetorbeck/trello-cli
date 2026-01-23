@@ -1,13 +1,13 @@
-import { Command, Flags, Interfaces } from "@oclif/core";
-import Config from "@trello-cli/config";
-import Cache from "@trello-cli/cache";
-import * as path from "path";
-import { TrelloClient } from "trello.js";
-import { parse } from "json2csv";
-import { run } from "./index";
+import { Command, Flags, Interfaces } from '@oclif/core';
+import Config from '@trello-cli/config';
+import Cache from '@trello-cli/cache';
+import * as path from 'path';
+import { TrelloClient } from 'trello.js';
+import { parse } from 'json2csv';
+import { run } from './index';
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
-  typeof BaseCommand["globalFlags"] & T["flags"]
+  (typeof BaseCommand)['globalFlags'] & T['flags']
 >;
 
 type Lookup = {
@@ -21,13 +21,13 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   // define flags that can be inherited by any command that extends BaseCommand
   static globalFlags = {
     format: Flags.enum({
-      options: ["default", "silent", "json", "csv"],
-      default: "default",
-      description: "Output format",
+      options: ['default', 'silent', 'json', 'csv'],
+      default: 'default',
+      description: 'Output format',
     }),
   };
 
-  protected defaultOutput: string = "silent";
+  protected defaultOutput: string = 'silent';
 
   protected flags!: Flags<T>;
 
@@ -39,31 +39,28 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected configDir: string;
 
   protected lookups: Lookup = {
-    board: "!!! Missing --board Flag !!!",
-    list: "!!! Missing --list Flag !!!",
-    card: "!!! Missing --card Flag !!!",
-    user: "!!! Missing --card Flag !!!",
+    board: '!!! Missing --board Flag !!!',
+    list: '!!! Missing --list Flag !!!',
+    card: '!!! Missing --card Flag !!!',
+    user: '!!! Missing --card Flag !!!',
   };
 
   constructor(a: any, b: any) {
     super(a, b);
 
-    const homeDir =
-      process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"];
-    this.configDir = path.join(homeDir!, ".trello-cli");
+    const homeDir = process.env[process.platform == 'win32' ? 'USERPROFILE' : 'HOME'];
+    this.configDir = path.join(homeDir!, '.trello-cli');
 
-    this.profile = process.env.TRELLO_CLI_PROFILE || "default";
+    this.profile = process.env.TRELLO_CLI_PROFILE || 'default';
     this.trelloConfig = new Config(this.configDir, this.profile);
   }
 
   public async init(): Promise<void> {
     await super.init();
-    const { flags } = await this.parse(
-      this.constructor as Interfaces.Command.Class
-    );
+    const { flags } = await this.parse(this.constructor as Interfaces.Command.Class);
     this.flags = flags;
 
-    if (this.id?.startsWith("auth:") && this.argv.length) {
+    if (this.id?.startsWith('auth:') && this.argv.length) {
       return;
     }
 
@@ -76,22 +73,16 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
         token: token,
       });
 
-      this.cache = new Cache(
-        path.join(this.configDir, this.profile),
-        appKey,
-        token
-      );
+      this.cache = new Cache(path.join(this.configDir, this.profile), appKey, token);
 
       // Auto-translate any `board` and `list` entries in this.flags
       if (this.flags.board) {
-        this.lookups.board = await this.cache.getBoardIdByName(
-          this.flags.board
-        );
+        this.lookups.board = await this.cache.getBoardIdByName(this.flags.board);
       }
       if (this.flags.list) {
         this.lookups.list = await this.cache.getListIdByBoardAndName(
           this.lookups.board,
-          this.flags.list
+          this.flags.list,
         );
       }
 
@@ -103,29 +94,39 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       }
 
       if (this.flags.card && this.flags.list) {
-        let cards = await this.client.lists.getListCards({
-          id: this.lookups.list,
-        });
+        // Check if card flag looks like a Trello ID:
+        // - Full ID: 24 char hex string (e.g., 6971cce9adce0658ae34e7c6)
+        // - Short link: 8 char alphanumeric from URL (e.g., yrSLWrI9)
+        const isFullId = /^[a-f0-9]{24}$/i.test(this.flags.card);
+        const isShortLink = /^[a-zA-Z0-9]{8}$/.test(this.flags.card);
 
-        cards = cards.filter((c) => this.flags.card == c.name);
+        if (isFullId || isShortLink) {
+          // Use the ID directly - Trello API accepts both formats
+          this.lookups.card = this.flags.card;
+        } else {
+          // Look up by name
+          let cards = await this.client.lists.getListCards({
+            id: this.lookups.list,
+          });
 
-        if (cards.length > 1) {
-          throw new Error(
-            `Found multiple cards with the name '${this.flags.card}'`
-          );
+          cards = cards.filter((c) => this.flags.card == c.name);
+
+          if (cards.length > 1) {
+            throw new Error(`Found multiple cards with the name '${this.flags.card}'`);
+          }
+
+          if (cards.length < 1) {
+            throw new Error(`Found no cards with the name '${this.flags.card}'`);
+          }
+
+          this.lookups.card = cards[0].id;
         }
-
-        if (cards.length < 1) {
-          throw new Error(`Found no cards with the name '${this.flags.card}'`);
-        }
-
-        this.lookups.card = cards[0].id;
       } else {
         this.lookups.card = this.flags.card;
       }
     } catch (e: any) {
       // If we're in debug mode, don't show how to generate credentials
-      if (this.id == "debug") {
+      if (this.id == 'debug') {
         return;
       }
 
@@ -135,14 +136,14 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       }
 
       let message = e.message || e;
-      if (e.code == "ERR_NO_APP_KEY") {
+      if (e.code == 'ERR_NO_APP_KEY') {
         this.warn(
-          `Visit ${e.data.url} to get an API key then run '${cmd} auth:api-key YOUR_API_KEY'`
+          `Visit ${e.data.url} to get an API key then run '${cmd} auth:api-key YOUR_API_KEY'`,
         );
-      } else if (e.code == "ERR_NO_TOKEN") {
+      } else if (e.code == 'ERR_NO_TOKEN') {
         this.warn(e.message);
         this.logToStderr(
-          `\nVisit ${e.data.url} to generate a token\n\nNext, run '${cmd} auth:token YOUR_TOKEN'`
+          `\nVisit ${e.data.url} to generate a token\n\nNext, run '${cmd} auth:token YOUR_TOKEN'`,
         );
       } else {
         this.warn(message);
@@ -153,28 +154,28 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   protected async output(data: any) {
     let format = this.flags.format;
-    if (this.flags.format == "default") {
+    if (!format || format == 'default') {
       format = this.defaultOutput;
     }
 
-    if (format == "silent") {
+    if (format == 'silent') {
       return;
     }
 
     const d = await this.toData(data);
-    if (format == "json") {
+    if (format == 'json') {
       return this.log(JSON.stringify(d, null, 2));
     }
-    if (format == "csv") {
+    if (format == 'csv') {
       return this.log(this.outputCsv(d));
     }
 
-    if (format == "fancy") {
+    if (format == 'fancy') {
       return this.log(await this.format(d));
     }
 
     // Not user controllable - may be set as the default for a command
-    if (format == "raw") {
+    if (format == 'raw') {
       return this.log(d);
     }
   }
@@ -199,7 +200,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   }
 
   async run(): Promise<void> {
-    await run([this.id!, "--help"]);
+    await run([this.id!, '--help']);
   }
 
   protected async catch(err: Error & { exitCode?: number }): Promise<any> {

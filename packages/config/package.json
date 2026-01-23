@@ -11,8 +11,8 @@
   ],
   "scripts": {
     "test": "bun test",
-    "build": "tsc --build tsconfig.build.json",
-    "dev": "tsc --build tsconfig.build.json --watch --preserveWatchOutput",
+    "build": "rm -rf dist && bun build src/index.ts --outdir dist --target bun",
+    "dev": "bun build src/index.ts --outdir dist --target bun --watch",
     "prepack": "bun run build"
   },
   "keywords": [],

@@ -4,6 +4,8 @@ import { Flags } from '@oclif/core';
 export default class Show extends BaseCommand<typeof Show> {
   static description = 'Show card details';
 
+  protected defaultOutput = 'json';
+
   static flags = {
     card: Flags.string({ required: false, description: 'Card name (requires --board and --list)' }),
     board: Flags.string({ required: false, description: 'Board name' }),

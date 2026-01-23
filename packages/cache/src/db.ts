@@ -1,9 +1,9 @@
-import Database from "better-sqlite3";
+import { Database } from "bun:sqlite";
 import path from "path";
 import fs from "fs";
 
 class DB {
-  protected db: Database.Database;
+  protected db: Database;
 
   constructor(configDir: string, dbName: string) {
     if (!fs.existsSync(configDir)) {

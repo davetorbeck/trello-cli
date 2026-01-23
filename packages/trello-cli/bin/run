@@ -1,5 +1,8 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
-const oclif = require('@oclif/core')
+import pkg from '@oclif/core'
+const { run, flush, Errors } = pkg
 
-oclif.run().then(require('@oclif/core/flush')).catch(require('@oclif/core/handle'))
+run(process.argv.slice(2), import.meta.url)
+  .then(flush)
+  .catch(Errors.handle)

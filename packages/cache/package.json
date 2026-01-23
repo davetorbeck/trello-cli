@@ -11,18 +11,15 @@
   ],
   "scripts": {
     "test": "bun test",
-    "build": "tsc --build tsconfig.build.json",
-    "dev": "tsc --build tsconfig.build.json --watch --preserveWatchOutput",
+    "build": "rm -rf dist && bun build src/index.ts --outdir dist --target bun",
+    "dev": "bun build src/index.ts --outdir dist --target bun --watch",
     "prepack": "bun run build"
   },
   "keywords": [],
   "author": "Michael Heap <m@michaelheap.com>",
   "license": "MIT",
-  "dependencies": {
-    "better-sqlite3": "^11.7.0"
-  },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
+    "@types/bun": "^1.2.4",
     "@types/node": "^18.0.0",
     "typescript": "^5.7.3"
   }

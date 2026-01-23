@@ -1,17 +1,11 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
-const oclif = require('@oclif/core')
-
-const path = require('path')
-const project = path.join(__dirname, '..', 'tsconfig.json')
-
-// In dev mode -> use ts-node and dev plugins
-process.env.NODE_ENV = 'development'
-
-require('ts-node').register({project})
+import pkg from '@oclif/core'
+const { run, flush, Errors, settings } = pkg
 
 // In dev mode, always show stack traces
-oclif.settings.debug = true;
+process.env.NODE_ENV = 'development'
+settings.debug = true
 
 // Start the CLI
-oclif.run().then(oclif.flush).catch(oclif.Errors.handle)
+run(process.argv.slice(2), import.meta.url).then(flush).catch(Errors.handle)
