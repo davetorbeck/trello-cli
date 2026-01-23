@@ -7,7 +7,7 @@
   "scripts": {
     "test": "bun run --filter '*' test",
     "dev": "bun run --filter '*' --parallel dev",
-    "build": "bunx typescript@5.7.3 -b",
+    "build": "bun run --filter '@trello-cli/config' build && bun run --filter '@trello-cli/cache' build && bun run --filter 'trello-cli' build",
     "clean": "rm -rf packages/*/dist packages/*/*.tsbuildinfo"
   }
 }

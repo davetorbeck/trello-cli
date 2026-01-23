@@ -1,7 +1,7 @@
-describe("#hello", () => {
-  it("runs", () => {
-    expect("Hello World").toBe("Hello World");
+import { describe, it, expect } from "bun:test";
+
+describe("Cache", () => {
+  it("placeholder", () => {
+    expect(true).toBe(true);
   });
 });
-
-export {};
